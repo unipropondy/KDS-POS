@@ -1,8 +1,23 @@
+# dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# testing
+coverage/
+
+# production
+build/
+dist/
+
+# env files
 .env
 .env.*
-dist/
-build/
-.expo/
+
+# misc
 .DS_Store
+.expo/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

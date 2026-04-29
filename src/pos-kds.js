@@ -210,9 +210,9 @@ export default function PosKds() {
                   style={{ borderTopColor: status.color }}
                 >
                   <div className="card-header">
-                    <div>
-                      <h2 className="card-title">{order.section} • Table {order.tableNo}</h2>
-                      <p className="order-id">#{order.orderNumber}</p>
+                    <div> 
+                      <h2 className="card-title">{order.section} • Table {order.tableNo}      ( {order.isTakeAway} ) </h2>
+                      <p className="order-id">#{order.orderNumber}   <span className="order-time">{order.orderTime}</span></p>
                     </div>
                   </div>
 
@@ -221,12 +221,12 @@ export default function PosKds() {
                   <div className="item-list">
                     {order.items.map((item, idx) => (
                       <div key={idx} className="item-row" onClick={() => toggleItemReady(order.orderId, idx)}>
-                        <div className="item-qty">{item.qty}x</div>
+                        <div className="item-qty">{item.qty}  x</div>
                         <div className="item-info">
                           <div className="item-name">
                             {item.dish}
                           </div>
-                          {item.modifier && <div className="item-modifier">{item.modifier}</div>}
+                          {item.modifier && <div className="item-modifier">( {item.modifier} )</div>}
                           {item.remark && <div className="item-remark">• {item.remark}</div>}
                           {(order.isTakeAway === 1 || item.isNew) && (
                             <div className="badge-row">

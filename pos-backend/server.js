@@ -119,30 +119,40 @@ app.get("/kds-today", async (req, res) => {
     const pool = await poolPromise;
 
     const result = await pool.request().query(`
+
       SELECT 
-        o.OrderId,
-        o.OrderNumber,
-        o.Tableno,
-        o.OrderDateTime,
-        o.IsTakeAway,
+    o.OrderId,
+    o.OrderNumber,
+    o.Tableno,
+      CONVERT(VARCHAR(10), o.OrderDateTime, 105) + ' ' +
+RIGHT(CONVERT(VARCHAR, o.OrderDateTime, 100), 7) AS OrderDateTime,
 
-        d.OrderDetailId,
-        d.DishName,
-        d.Quantity,
-        d.ModifierDescription,
-        d.Remarks,
-        d.isReady,
-        d.isDelivered
+    CASE 
+      WHEN o.IsTakeAway = '1' THEN 'TakeAway'
+      WHEN o.IsTakeAway = '0' THEN 'Dining'
+      ELSE ''
+    END AS IsTakeAway,
 
-      FROM RestaurantOrderCur o
-      INNER JOIN RestaurantOrderDetailCur d 
-        ON o.OrderId = d.OrderId
+    d.OrderDetailId,
+    d.DishName,
+    d.Quantity,
+    d.ModifierDescription,
+    d.Remarks,
+    d.isReady,
+    d.isDelivered
 
-      WHERE 
-        d.isReady = 0
-        AND CAST(o.OrderDateTime AS DATE) = CAST(GETDATE() AS DATE)
+FROM RestaurantOrderCur o
 
-      ORDER BY o.OrderDateTime ASC
+INNER JOIN RestaurantOrderDetailCur d 
+  ON o.OrderId = d.OrderId
+
+WHERE 
+    d.isReady = 0
+    AND o.StatusCode IN ('3','4')
+    AND CAST(o.OrderDateTime AS DATE) = CAST(GETDATE() AS DATE)
+
+ORDER BY o.OrderDateTime ASC;
+     
     `);
 
     res.json(result.recordset);
@@ -209,3 +219,29 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });
+
+
+//  SELECT
+//         o.OrderId,
+//         o.OrderNumber,
+//         o.Tableno,
+//         o.OrderDateTime,
+//         o.IsTakeAway,
+
+//         d.OrderDetailId,
+//         d.DishName,
+//         d.Quantity,
+//         d.ModifierDescription,
+//         d.Remarks,
+//         d.isReady,
+//         d.isDelivered
+
+//       FROM RestaurantOrderCur o
+//       INNER JOIN RestaurantOrderDetailCur d
+//         ON o.OrderId = d.OrderId
+
+//       WHERE
+//         d.isReady = 0
+//         AND CAST(o.OrderDateTime AS DATE) = CAST(GETDATE() AS DATE)
+
+//       ORDER BY o.OrderDateTime ASC

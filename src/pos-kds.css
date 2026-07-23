@@ -219,7 +219,20 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
 }
+
+.item-row.first-batch .item-name {
+  color: #333; /* Black/dark color font */
+}
+
+.item-row.additional-batch .item-name {
+  color: red; /* Red color font */
+}
+
+
 
 .item-qty {
   background: #fff5eb;
@@ -238,7 +251,7 @@ body {
 
 .item-name {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 24px;
   color: #333;
   cursor: pointer;
   transition: color 0.2s;
@@ -304,8 +317,8 @@ body {
 }
 
 .order-time {
-  margin-left: 200px;   /* 👉 space */
-  font-size: 15px;     /* 👉 smaller font */
+  margin-left: 100px;   
+  font-size: 14px;     /* 👉 smaller font */
   color: rgb(245, 28, 28);
 }
 

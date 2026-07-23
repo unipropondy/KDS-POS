@@ -122,6 +122,7 @@ export default function PosKds() {
         qty: item.Quantity,
         modifier: item.ModifierDescription,
         remark: item.Remarks,
+        colour: item.colour
       });
     });
     return Object.values(grouped);
@@ -210,9 +211,9 @@ export default function PosKds() {
                   style={{ borderTopColor: status.color }}
                 >
                   <div className="card-header">
-                    <div> 
+                    <div>
                       <h2 className="card-title">{order.section} • Table {order.tableNo}      ( {order.isTakeAway} ) </h2>
-                      <p className="order-id">#{order.orderNumber}   <span className="order-time">{order.orderTime}</span></p>
+                      <p className="order-id">#{order.orderNumber}<span className="order-time">{order.orderTime}</span></p>
                     </div>
                   </div>
 
@@ -220,10 +221,10 @@ export default function PosKds() {
 
                   <div className="item-list">
                     {order.items.map((item, idx) => (
-                      <div key={idx} className="item-row" onClick={() => toggleItemReady(order.orderId, idx)}>
+                      <div key={idx} className={`item-row ${item.colour === 'RED' ? 'additional-batch' : 'first-batch'}`} onClick={() => toggleItemReady(order.orderId, idx)}>
                         <div className="item-qty">{item.qty}  x</div>
                         <div className="item-info">
-                          <div className="item-name">
+                          <div className="item-name" style={{ color: item.colour === 'BLOCK' ? '#333' : (item.colour === 'RED' ? 'red' : 'inherit') }}>
                             {item.dish}
                           </div>
                           {item.modifier && <div className="item-modifier">( {item.modifier} )</div>}

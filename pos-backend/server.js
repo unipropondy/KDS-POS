@@ -124,13 +124,14 @@ app.get("/kds-today", async (req, res) => {
     o.OrderId,
     o.OrderNumber,
     o.Tableno,
-      CONVERT(VARCHAR(10), o.OrderDateTime, 105) + ' ' +
-RIGHT(CONVERT(VARCHAR, o.OrderDateTime, 100), 7) AS OrderDateTime,
+
+    CONVERT(VARCHAR(10), o.OrderDateTime, 105) + ' ' +
+    RIGHT(CONVERT(VARCHAR, o.OrderDateTime, 100), 7) AS OrderDateTime,
 
     CASE 
-      WHEN o.IsTakeAway = '1' THEN 'TakeAway'
-      WHEN o.IsTakeAway = '0' THEN 'Dining'
-      ELSE ''
+        WHEN o.IsTakeAway = '1' THEN 'TakeAway'
+        WHEN o.IsTakeAway = '0' THEN 'Dining'
+        ELSE ''
     END AS IsTakeAway,
 
     d.OrderDetailId,
@@ -139,19 +140,35 @@ RIGHT(CONVERT(VARCHAR, o.OrderDateTime, 100), 7) AS OrderDateTime,
     d.ModifierDescription,
     d.Remarks,
     d.isReady,
-    d.isDelivered
+    d.isDelivered,
+    d.CreatedOn,
+
+    DENSE_RANK() OVER (
+        PARTITION BY o.OrderNumber
+        ORDER BY DATEADD(minute, DATEDIFF(minute, 0, d.CreatedOn), 0)
+    ) AS BatchNo,
+
+    CASE
+        WHEN DENSE_RANK() OVER (
+            PARTITION BY o.OrderNumber
+            ORDER BY DATEADD(minute, DATEDIFF(minute, 0, d.CreatedOn), 0)
+        ) = 1 THEN 'BLOCK'
+        ELSE 'RED'
+    END AS colour
 
 FROM RestaurantOrderCur o
+INNER JOIN RestaurantOrderDetailCur d
+    ON o.OrderId = d.OrderId
 
-INNER JOIN RestaurantOrderDetailCur d 
-  ON o.OrderId = d.OrderId
-
-WHERE 
+WHERE
     d.isReady = 0
     AND o.StatusCode IN ('3','4')
     AND CAST(o.OrderDateTime AS DATE) = CAST(GETDATE() AS DATE)
 
-ORDER BY o.OrderDateTime ASC;
+ORDER BY
+    o.OrderNumber,
+    BatchNo,
+    d.CreatedOn;
      
     `);
 
